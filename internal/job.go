@@ -18,13 +18,13 @@ func RunCommand(args []string) (context.CancelFunc, *exec.Cmd) {
 	// ctx, cancel := context.WithCancel(context.Background())
 	// defer cancel()
 
-	var sus = strings.Builder{}
+	var cmdargv = strings.Builder{}
 	for _, s := range args {
-		sus.WriteString(s)
-		sus.WriteRune(' ')
+		cmdargv.WriteString(s)
+		cmdargv.WriteRune(' ')
 	}
 
-	var argv = []string{DefaultShellArgs, sus.String()}
+	var argv = []string{DefaultShellArgs, cmdargv.String()}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	var cmd = exec.CommandContext(
