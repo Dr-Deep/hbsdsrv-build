@@ -3,6 +3,7 @@ package internal
 import (
 	"context"
 	"os/exec"
+	"strings"
 )
 
 const DefaultShell = "/bin/sh"
@@ -17,8 +18,13 @@ func RunCommand(args []string) (context.CancelFunc, *exec.Cmd) {
 	// ctx, cancel := context.WithCancel(context.Background())
 	// defer cancel()
 
-	var argv = []string{DefaultShellArgs}
-	argv = append(argv, args...)
+	var sus = strings.Builder{}
+	for _, s := range args {
+		sus.WriteString(s)
+		sus.WriteRune(' ')
+	}
+
+	var argv = []string{DefaultShellArgs, sus.String()}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	var cmd = exec.CommandContext(
