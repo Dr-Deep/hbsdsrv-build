@@ -1,0 +1,55 @@
+jobs:
+  test:
+    test-target1: # goldmont-plus, skylake, default/lto/tests
+      - ["echo", "job", "test1", "done!"] # test job
+
+    test-target2: # goldmont-plus, skylake, default/lto/tests
+      - ["echo", "job", "test2", "done!"] # test job
+
+  pkgbase:
+
+  ports:
+    test-target-ports:
+      - ["echo", "test-target done!"] # test target
+
+    goldmont-plus:
+      - ["poudriere", "bulk",
+        "-v",
+        "-O", "hyprland_overlay",
+        "-O", "signal_overlay",
+        "-j", "HBSD-14-STABLE",
+        "-p", "default",
+        "-z", "goldmont_plus",
+        "-f", "/usr/local/etc/poudriere.d/pkglist"
+        ]
+
+    skylake:
+      - ["poudriere", "bulk",
+        "-v",
+        "-O", "hyprland_overlay",
+        "-O", "signal_overlay",
+        "-j", "HBSD-14-STABLE",
+        "-p", "default",
+        "-z", "skylake",
+        "-f", "/usr/local/etc/poudriere.d/pkglist"
+        ]
+
+    lto-tests:
+      - ["poudriere", "bulk",
+        "-v",
+        "-O", "hyprland_overlay",
+        "-O", "signal_overlay",
+        "-j", "HBSD-14-STABLE",
+        "-p", "default",
+        "-z", "lto_test",
+        "-f", "/usr/local/etc/poudriere.d/pkglist"
+        ]
+
+triggers:
+  - type: git
+    job: test
+    git-repo-url: https://git.hardenedbsd.org/hardenedbsd/HardenedBSD
+    git-branch: hardened/14-stable/master
+
+  - type: test
+    job: test

@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# PROVIDE: hbsdsrv-builder
+# REQUIRE: DAEMON
+# KEYWORD: shutdown
+
+# /usr/local/etc/rc.d/hbsdsrv-builder
+
+# hbsdsrv-builder_enable="YES"
+# hbsdsrv-builder_args="" # cfg, loggingfile
+
+. /etc/rc.subr
+
+name="hbsdsrv-builder"
+desc="hbsdsrv pkgbase and ports builder"
+rcvar=hbsdsrv_builder_enable
+
+load_rc_config $name
+
+: ${hbsdsrv_builder_enable="NO"}
+: ${hbsdsrv_builder_args=""}
+
+hbsdsrv_builder_pidfile="/var/run/${name}.pid"
+hbsdsrv_builder_logfile="/var/log/${name}.log"
+
+proc="/usr/local/hbsdsrv-builder/hbsdsrv-builder"
+procargs="${hbsdsrv_builder_args}"
+command="/usr/sbin/daemon"
+command_args="-f -p ${hbsdsrv_builder_pidfile} -o ${hbsdsrv_builder_logfile} -t ${name}"
+
+start_cmd() {
+    echo "Launching hbsdsrv-builder..."
+    touch ${hbsdsrv_builder_logfile}
+    exec ${command} ${command_args} ${proc} ${procargs} || {
+        echo "Failed to start ${name}"
+        return 1
+    }
+}
+
+stop_cmd() {
+    echo "Stopping hbsdsrv-builder..."
+    kill -INT ${name} || true
+}
+
+run_rc_command "$1"
