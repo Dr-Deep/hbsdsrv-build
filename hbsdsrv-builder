@@ -23,7 +23,7 @@ load_rc_config $name
 hbsdsrv_builder_pidfile="/var/run/${name}.pid"
 hbsdsrv_builder_logfile="/var/log/${name}.log"
 
-proc="/usr/local/hbsdsrv-builder/hbsdsrv-builder"
+proc="/usr/local/hbsdsrv-builder/hbsdsrv-build"
 procargs="${hbsdsrv_builder_args}"
 command="/usr/sbin/daemon"
 command_args="-f -p ${hbsdsrv_builder_pidfile} -o ${hbsdsrv_builder_logfile} -t ${name}"
