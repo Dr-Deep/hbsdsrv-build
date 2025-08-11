@@ -1,0 +1,28 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - govet
+    - staticcheck
+    - gosimple
+    - unused
+    - gocyclo
+    - gofmt
+    - goimports
+    - misspell
+    - gocritic
+    - nestif
+    - prealloc
+    - unparam
+    - goconst
+  disable:
+    - errcheck # Falls du erstmal nicht alle Error-Checks willst
+
+linters-settings:
+  gocyclo:
+    min-complexity: 10
+  misspell:
+    locale: US
+  nestif:
+    min-complexity: 4
