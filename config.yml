@@ -29,6 +29,22 @@ jobs:
         "poudriere bulk -v -O hyprland_overlay -O signal_overlay -j HBSD-14-STABLE -p default -z lto_test -f /usr/local/etc/poudriere.d/pkglist",
         ]
 
+  hsbdsrv-build:
+    build-install:
+      - [ # git clone => /usr/local && go build .
+        "echo hbsdsrv-build test",
+        "&&",
+        "echo hbsdsrv-build test2",
+        ]
+
+  hbsdsrv-www:
+    build-install:
+      - [ # git clone => /usr/local && go build .
+        "echo hbsdsrv-www test",
+        "&&",
+        "echo hbsdsrv-www test2",
+        ]
+
 triggers:
   - type: git
     job: pkgbase
@@ -39,3 +55,13 @@ triggers:
     job: ports
     git-repo-url: https://git.hardenedbsd.org/hardenedbsd/ports
     git-branch: hardenedbsd/main
+
+  - type: git
+    job: hsbdsrv-build
+    git-repo-url: https://github.com/Dr-Deep/hbsdsrv-build/
+    git-branch: main
+
+  - type: git
+    job: hsbdsrv-www
+    git-repo-url: https://github.com/Dr-Deep/hbsdsrv-www
+    git-branch: main
