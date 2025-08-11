@@ -15,6 +15,8 @@ linters:
   disable:
     - errcheck
     - depguard
+    - exhaustruct
+    - gochecknoglobals
 
   # All available settings of specific linters.
   settings:
