@@ -27,6 +27,8 @@ const (
 
 	// LogFatal represents fatal errors.
 	LogFatal
+
+	unknownFuncName = "???"
 )
 
 var (
@@ -106,7 +108,7 @@ func (logger *Logger) Debug(messageParts ...string) {
 	pc, _, _, ok := runtime.Caller(1)
 	funcname := runtime.FuncForPC(pc).Name()
 	if !ok {
-		funcname = "???"
+		funcname = unknownFuncName
 	}
 
 	logger.Log(LogDebug, funcname, messageParts...)
@@ -116,7 +118,7 @@ func (logger *Logger) Info(messageParts ...string) {
 	pc, _, _, ok := runtime.Caller(1)
 	funcname := runtime.FuncForPC(pc).Name()
 	if !ok {
-		funcname = "???"
+		funcname = unknownFuncName
 	}
 
 	logger.Log(LogInfo, funcname, messageParts...)
@@ -126,7 +128,7 @@ func (logger *Logger) Error(messageParts ...string) {
 	pc, _, _, ok := runtime.Caller(1)
 	funcname := runtime.FuncForPC(pc).Name()
 	if !ok {
-		funcname = "???"
+		funcname = unknownFuncName
 	}
 
 	logger.Log(LogError, funcname, messageParts...)
@@ -136,7 +138,7 @@ func (logger *Logger) Fatal(messageParts ...string) {
 	pc, _, _, ok := runtime.Caller(1)
 	funcname := runtime.FuncForPC(pc).Name()
 	if !ok {
-		funcname = "???"
+		funcname = unknownFuncName
 	}
 
 	logger.Log(LogFatal, funcname, messageParts...)

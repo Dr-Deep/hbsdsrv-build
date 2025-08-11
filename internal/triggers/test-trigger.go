@@ -23,7 +23,7 @@ func (t *TriggerTest) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 		time.Sleep(time.Second * 5)
 
 		c <- internal.TriggerSignal{
-			JobName: t.Job, //? cfg
+			JobName: t.Job,
 			Reason:  "testing purpose",
 		}
 	}

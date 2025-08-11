@@ -102,6 +102,24 @@ func (b *Builder) Stop() {
 	os.Exit(0)
 }
 
+func (b *Builder) RunJob(job Job) {
+	b.Lock()
+
+	b.Logger.Info(
+		"Got triggered, running job",
+		fmt.Sprintf("%v", job),
+	)
+
+	if err := job.Run(b); err != nil {
+		b.Logger.Error(
+			fmt.Sprintf("%s", err),
+			fmt.Sprintf("%#v", job),
+		)
+	}
+
+	b.Unlock()
+}
+
 // queue, weil immer nur 1x job aufeinmal
 func (b *Builder) run() {
 	defer b.Stop()
@@ -132,22 +150,4 @@ func (b *Builder) handleTrigger(t *TriggerSignal) {
 	for _, j := range jobs {
 		go b.RunJob(j)
 	}
-}
-
-func (b *Builder) RunJob(job Job) {
-	b.Lock()
-
-	b.Logger.Info(
-		"Got triggered, running job",
-		fmt.Sprintf("%v", job),
-	)
-
-	if err := job.Run(b); err != nil {
-		b.Logger.Error(
-			fmt.Sprintf("%s", err),
-			fmt.Sprintf("%#v", job),
-		)
-	}
-
-	b.Unlock()
 }

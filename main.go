@@ -23,12 +23,12 @@ var (
 	}
 
 	// Flags
-	configFilePath = *flag.String(
+	configFilePath = flag.String(
 		"config-file",
 		"./config.yml",
 		"configuration file",
 	)
-	loggingFilePath = *flag.String(
+	loggingFilePath = flag.String(
 		"logging-file",
 		"",
 		"logging file",
@@ -37,12 +37,15 @@ var (
 
 func init() {
 	flag.Parse()
+
+	// Todo: gucken das nur root schreibrechte auf cfg hat sonst führen wir hier ganix aus
 }
 
 func main() {
 	// Config
+	// #nosec G304 -- Zugriff nur auf bekannte Log- und Config-Dateien
 	cfgFile, err := os.OpenFile(
-		configFilePath,
+		*configFilePath,
 		os.O_RDONLY,
 		os.ModePerm,
 	)
@@ -57,9 +60,10 @@ func main() {
 
 	// Logger
 	var logFile *os.File
-	if loggingFilePath != "" {
+	// #nosec G304 -- Zugriff nur auf bekannte Log- und Config-Dateien
+	if *loggingFilePath != "" {
 		logFile, err = os.OpenFile(
-			loggingFilePath,
+			*loggingFilePath,
 			os.O_RDWR,
 			os.ModePerm,
 		)
