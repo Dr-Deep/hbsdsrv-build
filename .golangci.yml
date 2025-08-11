@@ -17,6 +17,8 @@ linters:
     - depguard
     - exhaustruct
     - gochecknoglobals
+    - godot
+    - gochecknoinits
 
   # All available settings of specific linters.
   settings:
