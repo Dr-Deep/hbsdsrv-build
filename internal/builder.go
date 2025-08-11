@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"context"
 	"fmt"
 	"hbsdsrv-build/internal/config"
 	"hbsdsrv-build/internal/logging"
@@ -12,9 +11,8 @@ import (
 )
 
 type Builder struct {
-	trigger     []Trigger
-	RunningJobs []context.CancelFunc
-	jobs        map[string][]Job
+	trigger []Trigger
+	jobs    map[string][]Job
 
 	Logger *logging.Logger
 	cfg    *config.Configuration
@@ -29,11 +27,10 @@ type Builder struct {
 func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
 
 	var builder = &Builder{
-		trigger:     []Trigger{},
-		RunningJobs: []context.CancelFunc{},
-		jobs:        map[string][]Job{},
-		Logger:      logger,
-		cfg:         cfg,
+		trigger: []Trigger{},
+		jobs:    map[string][]Job{},
+		Logger:  logger,
+		cfg:     cfg,
 	}
 
 	builder.exitSignalChan = make(chan os.Signal, 1)
@@ -94,13 +91,10 @@ func (b *Builder) Launch() {
 func (b *Builder) Stop() {
 	b.Logger.Info("Quitting...")
 
-	// Stop Jobs
-	if len(b.RunningJobs) != 0 {
-		for _, f := range b.RunningJobs {
-			f()
-		}
-	}
+	// wait for jobs
+	b.Lock()
 
+	// Stop Jobs
 	signal.Stop(b.exitSignalChan)
 	close(b.exitSignalChan)
 	close(b.triggersSignalChan)

@@ -21,11 +21,9 @@ func (j *JobTest) Run(b *internal.Builder) error {
 		fmt.Sprintf("running: %v", j.args),
 	)
 
-	ctx, cmd := internal.RunCommand(j.args)
+	_, cmd := internal.RunCommand(j.args)
 	cmd.Stdout = b.Logger.File
 	cmd.Stderr = b.Logger.File
-
-	b.RunningJobs = append(b.RunningJobs, ctx)
 
 	return cmd.Run()
 }

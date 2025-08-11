@@ -5,4 +5,3 @@
 # git checkout hardenedbsd/main
 # mount per nullfs src.conf && target-make.conf
 # make -j6 __MAKE_CONF=/target-make.conf buildkernel buildworld packages
-
