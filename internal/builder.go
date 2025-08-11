@@ -1,3 +1,5 @@
+// Package internal provides core functionality for building and managing
+// triggers and jobs, including runtime signal handling and configuration management.
 package internal
 
 import (
@@ -10,6 +12,8 @@ import (
 	"syscall"
 )
 
+// Builder manages triggers and jobs, handles runtime signals,
+// and coordinates execution flow with logging and configuration support.
 type Builder struct {
 	trigger []Trigger
 	jobs    map[string][]Job
@@ -24,6 +28,7 @@ type Builder struct {
 	sync.Mutex
 }
 
+// create a new Builder{} struct
 func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
 
 	var builder = &Builder{
@@ -137,6 +142,7 @@ func (b *Builder) run() {
 
 		case <-b.exitSignalChan:
 			b.Logger.Info("catched SIGINT/SIGTERM")
+
 			return
 
 		default:

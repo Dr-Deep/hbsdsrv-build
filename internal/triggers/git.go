@@ -62,6 +62,7 @@ func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 		refs, err := t.remote.List(&git.ListOptions{})
 		if err != nil {
 			b.Logger.Error("Git", err.Error())
+
 			return
 		}
 

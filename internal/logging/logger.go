@@ -72,6 +72,7 @@ func (logger *Logger) Close() error {
 	if flushErr != nil {
 		return flushErr
 	}
+
 	return closeErr
 }
 
