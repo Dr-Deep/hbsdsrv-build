@@ -83,9 +83,9 @@ func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 					}
 
 					return
-				} else {
-					b.Logger.Info("Git", "were on head", t.lastCommitHash.String())
 				}
+
+				b.Logger.Info("Git", "were on head", t.lastCommitHash.String())
 			}
 		}
 	}
