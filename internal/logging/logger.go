@@ -93,8 +93,12 @@ func (logger *Logger) Log(level Level, logType string, messageParts ...string) {
 
 	// output line
 	logger.Lock()
-	logger.Writer.Write(rawBuf.Bytes())
-	logger.Writer.Flush()
+	if _, err := logger.Writer.Write(rawBuf.Bytes()); err != nil {
+		panic(err)
+	}
+	if err := logger.Writer.Flush(); err != nil {
+		panic(err)
+	}
 	logger.Unlock()
 }
 

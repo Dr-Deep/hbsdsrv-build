@@ -46,6 +46,9 @@ func main() {
 		os.O_RDONLY,
 		os.ModePerm,
 	)
+	if err != nil {
+		panic(err)
+	}
 
 	cfg, err := config.LoadConfig(cfgFile)
 	if err != nil {
@@ -68,7 +71,11 @@ func main() {
 	}
 
 	logger := logging.NewLogger(logFile)
-	defer logger.Close()
+	defer func() {
+		if err := logger.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	var builder = internal.NewBuilder(logger, cfg)
 
