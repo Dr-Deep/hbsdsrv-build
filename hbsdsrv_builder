@@ -6,7 +6,7 @@
 
 . /etc/rc.subr
 
-# /usr/local/etc/rc.d/hbsdsrv-builder
+# /usr/local/etc/rc.d/hbsdsrv_builder
 
 name="hbsdsrv_builder"
 rcvar=hbsdsrv_builder_enable
