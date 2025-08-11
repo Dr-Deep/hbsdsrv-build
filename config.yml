@@ -7,7 +7,7 @@ jobs:
         "echo pkgbase test2",
         ]
 
-  ports:
+  ports: # gotify push -t title -p 10 "message test~"
     goldmont-plus:
       - [
         "poudriere ports -u -p default -p hyprland_overlay -p signal_desktop_overlay",
