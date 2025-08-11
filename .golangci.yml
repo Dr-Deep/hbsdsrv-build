@@ -17,12 +17,12 @@ linters:
     - unparam
     - goconst
   disable:
-    - errcheck # Falls du erstmal nicht alle Error-Checks willst
+    - errcheck
 
 linters-settings:
   gocyclo:
     min-complexity: 10
   misspell:
-    locale: US
+    locale: DE
   nestif:
     min-complexity: 4
