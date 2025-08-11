@@ -12,7 +12,7 @@ import (
 )
 
 // alle paar min (15/30min) abfragen
-const intervalDuration = time.Minute * 15
+const testIntervalDuration = time.Minute * 15
 
 type TriggerGit struct {
 	remote         *git.Remote
@@ -100,7 +100,7 @@ func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 	}
 
 	for {
-		time.Sleep(intervalDuration)
+		time.Sleep(testIntervalDuration)
 		checkForNewCommits()
 	}
 }

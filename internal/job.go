@@ -10,7 +10,7 @@ const DefaultShell = "/bin/sh"
 const DefaultShellArgs = "-euxc"
 
 type Job interface {
-	Run(*Builder) error
+	Run(b *Builder) error
 	Abort()
 }
 

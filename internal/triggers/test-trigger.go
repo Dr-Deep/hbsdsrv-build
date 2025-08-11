@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const intervallDuration = time.Second * 5
+
 type TriggerTest struct {
 	config.TriggerConfig
 }
@@ -20,7 +22,7 @@ func (t *TriggerTest) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 	// solang channel auf ist
 
 	for {
-		time.Sleep(time.Second * 5)
+		time.Sleep(testIntervalDuration)
 
 		c <- internal.TriggerSignal{
 			JobName: t.Job,

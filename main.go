@@ -22,6 +22,9 @@ var (
 		"pkgbase": jobs.NewJobPkgbase,
 	}
 
+	cfg    *config.Configuration
+	logger *logging.Logger
+
 	// Flags
 	configFilePath = flag.String(
 		"config-file",
@@ -41,40 +44,47 @@ func init() {
 	// Todo: gucken das nur root schreibrechte auf cfg hat sonst führen wir hier ganix aus
 }
 
-func main() {
-	// Config
+func setupConfig() {
 	// #nosec G304 -- Zugriff nur auf bekannte Log- und Config-Dateien
 	cfgFile, err := os.OpenFile(
 		*configFilePath,
 		os.O_RDONLY,
-		os.ModePerm,
+		0600,
 	)
 	if err != nil {
 		panic(err)
 	}
 
-	cfg, err := config.LoadConfig(cfgFile)
+	cfg, err = config.LoadConfig(cfgFile)
 	if err != nil {
 		panic(err)
 	}
+}
 
-	// Logger
+func setupLogger() {
 	var logFile *os.File
 	// #nosec G304 -- Zugriff nur auf bekannte Log- und Config-Dateien
 	if *loggingFilePath != "" {
-		logFile, err = os.OpenFile(
+		_logFile, err := os.OpenFile(
 			*loggingFilePath,
-			os.O_RDWR,
-			os.ModePerm,
+			os.O_CREATE|os.O_WRONLY|os.O_APPEND,
+			0600,
 		)
 		if err != nil {
 			panic(err)
 		}
+		logFile = _logFile
 	} else {
 		logFile = os.Stdout
 	}
 
-	logger := logging.NewLogger(logFile)
+	logger = logging.NewLogger(logFile)
+}
+
+func main() {
+	setupConfig()
+	setupLogger()
+
 	defer func() {
 		if err := logger.Close(); err != nil {
 			panic(err)
@@ -104,7 +114,7 @@ func main() {
 						f(arg),
 					)
 				} else {
-					logger.Error("Job not registerd", job, target)
+					logger.Error("Job not registered", job, target)
 				}
 			}
 		}

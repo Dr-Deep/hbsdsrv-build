@@ -1,7 +1,7 @@
 package internal
 
 type Trigger interface {
-	Run(*Builder, chan TriggerSignal)
+	Run(b *Builder, c chan TriggerSignal)
 }
 
 type TriggerSignal struct {
