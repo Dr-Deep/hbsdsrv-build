@@ -7,12 +7,16 @@ jobs:
         "echo pkgbase test2",
         ]
 
-  ports: # gotify push -t title -p 10 "message test~"
+  ports:
     goldmont-plus:
       - [
         "poudriere ports -u -p default -p hyprland_overlay -p signal_desktop_overlay",
         "&&",
         "poudriere bulk -v -O hyprland_overlay -O signal_overlay -j HBSD-14-STABLE -p default -z goldmont_plus -f /usr/local/etc/poudriere.d/pkglist",
+        "&&",
+        "gotify push -t goldmont-plus -p 10 'Build erfolgreich'",
+        "||",
+        "gotify push -t goldmont-plus -p 9 'Build fehlgeschlagen'",
         ]
 
     skylake:
@@ -20,6 +24,10 @@ jobs:
         "poudriere ports -u -p default -p hyprland_overlay -p signal_desktop_overlay",
         "&&",
         "poudriere bulk -v -O hyprland_overlay -O signal_overlay -j HBSD-14-STABLE -p default -z skylake -f /usr/local/etc/poudriere.d/pkglist",
+        "&&",
+        "gotify push -t skylake -p 10 'Build erfolgreich'",
+        "||",
+        "gotify push -t skylake -p 9 'Build fehlgeschlagen'",
         ]
 
     lto-tests:
@@ -27,6 +35,10 @@ jobs:
         "poudriere ports -u -p default -p hyprland_overlay -p signal_desktop_overlay",
         "&&",
         "poudriere bulk -v -O hyprland_overlay -O signal_overlay -j HBSD-14-STABLE -p default -z lto_test -f /usr/local/etc/poudriere.d/pkglist",
+        "&&",
+        "gotify push -t lto_test -p 10 'Build erfolgreich'",
+        "||",
+        "gotify push -t lto_test -p 9 'Build fehlgeschlagen'",
         ]
 
   hsbdsrv-build:
