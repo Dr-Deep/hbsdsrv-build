@@ -75,7 +75,7 @@ func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 					// new commit
 					t.lastCommitHash = r.Hash()
 
-					b.Logger.Info("Git", "got new commit", r.Hash().String(), r.String())
+					b.Logger.Info("Git", t.Job, "got new commit", r.Hash().String(), r.String())
 
 					// job losschicken
 					c <- internal.TriggerSignal{
@@ -86,7 +86,7 @@ func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 					return
 				}
 
-				b.Logger.Info("Git", "were on head", t.lastCommitHash.String())
+				b.Logger.Info("Git", t.Job, "were on head", t.lastCommitHash.String())
 			}
 		}
 	}
