@@ -20,6 +20,7 @@ linters:
     - godot
     - gochecknoinits
     - varnamelen
+    - revive
 
   # All available settings of specific linters.
   settings:
