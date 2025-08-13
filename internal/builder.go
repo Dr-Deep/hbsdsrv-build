@@ -30,7 +30,8 @@ type Builder struct {
 	sync.Mutex
 }
 
-// create a new Builder{} struct
+// NewBuilder creates and initializes a new Builder instance
+// with the provided logger and configuration.
 func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
 
 	var builder = &Builder{
@@ -46,6 +47,8 @@ func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
 	return builder
 }
 
+// RegisterTrigger registers a new trigger with the Builder,
+// using the provided trigger creation function and configuration.
 func (b *Builder) RegisterTrigger(f func(config.TriggerConfig) Trigger, t config.TriggerConfig) {
 	b.Logger.Debug(
 		"registering",
@@ -62,6 +65,8 @@ func (b *Builder) RegisterTrigger(f func(config.TriggerConfig) Trigger, t config
 	)
 }
 
+// RegisterJob registers a job under the given job name
+// and associates it with a specific target.
 func (b *Builder) RegisterJob(jobname string, targetname string, target Job) {
 	// []trigger
 	// trigger-job: pkgbase/ports
@@ -85,6 +90,8 @@ func (b *Builder) RegisterJob(jobname string, targetname string, target Job) {
 	)
 }
 
+// Launch starts the Builder by listening for system signals
+// and executing triggers in separate goroutines.
 func (b *Builder) Launch() {
 	signal.Notify(
 		b.exitSignalChan,
@@ -95,6 +102,8 @@ func (b *Builder) Launch() {
 	b.run()
 }
 
+// Stop gracefully stops the Builder by aborting the current job,
+// stopping signal listeners, and closing channels before exiting.
 func (b *Builder) Stop() {
 	b.Logger.Info("Quitting...")
 
@@ -114,6 +123,8 @@ func (b *Builder) Stop() {
 	os.Exit(0)
 }
 
+// RunJob executes the provided job within the Builder context,
+// logging its execution and handling any errors.
 func (b *Builder) RunJob(job Job) {
 	b.Lock()
 
