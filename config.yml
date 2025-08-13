@@ -43,18 +43,26 @@ jobs:
 
   hsbdsrv-build:
     build-install:
-      - [ # "(TMPDIR=$(mktemp -d) && git clone 'https://github.com/Dr-Deep/hbsdsrv-www.git' \"$TMPDIR/hbsdsrv-www\" && cd \"$TMPDIR/hbsdsrv-www\" && go build . && mv hbsdsrv-www /usr/local/bin/hbsdsrv-www)",
-        "",
-        "",
-        "",
+      - [
+        "TMPDIR=$(mktemp -d)",
+        "&&",
+        "git clone 'https://github.com/Dr-Deep/hbsdsrv-build.git' $TMPDIR/hbsdsrv-build",
+        "&&",
+        "go build -C $TMPDIR/hbsdsrv-build -v -x",
+        "&&",
+        "mv $TMPDIR/hbsdsrv-build/hbsdsrv-build /usr/local/hbsdsrv-build",
         ]
 
   hbsdsrv-www:
     build-install:
-      - [ # git clone => /tmp && go build . // mv build /usr/local/exeX
-        "git clone 'https://github.com/Dr-Deep/hbsdsrv-www.git' /usr/local/hbsdsrv-www",
+      - [
+        "TMPDIR=$(mktemp -d)",
         "&&",
-        "",
+        "git clone 'https://github.com/Dr-Deep/hbsdsrv-www.git' $TMPDIR/hbsdsrv-www",
+        "&&",
+        "go build -C $TMPDIR/hbsdsrv-www -v -x",
+        "&&",
+        "mv $TMPDIR/hbsdsrv-www/hbsdsrv-www /usr/local/hbsdsrv-www",
         ]
 
 triggers:
