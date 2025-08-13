@@ -21,6 +21,7 @@ linters:
     - gochecknoinits
     - varnamelen
     - revive
+    - ireturn
 
   # All available settings of specific linters.
   settings:
