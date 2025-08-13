@@ -48,12 +48,14 @@ type Logger struct {
 	Level  Level
 }
 
-func NewLogger(file *os.File) (logger *Logger) {
+func NewLogger(file *os.File) *Logger {
+	var logger *Logger
+
 	if file == nil {
 		logger = &Logger{
 			File:   file,
 			Level:  defaultLogLevel,
-			Writer: bufio.NewWriter(&bytes.Buffer{}),
+			Writer: bufio.NewWriter(os.Stdout),
 		}
 	} else {
 		logger = &Logger{
