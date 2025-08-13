@@ -12,7 +12,7 @@ import (
 )
 
 // alle paar min (15/30min) abfragen
-const testIntervalDuration = time.Minute * 15
+const gitIntervalDuration = time.Minute * 15
 
 type TriggerGit struct {
 	remote         *git.Remote

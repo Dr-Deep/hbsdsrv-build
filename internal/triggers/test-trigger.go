@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const intervallDuration = time.Second * 5
+const testIntervalDuration = time.Second * 5
 
 type TriggerTest struct {
 	config.TriggerConfig
