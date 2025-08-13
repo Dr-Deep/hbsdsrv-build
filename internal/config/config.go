@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -26,12 +27,12 @@ type Configuration struct {
 func LoadConfig(file *os.File) (*Configuration, error) {
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("io ReadAll", err.Error())
 	}
 
 	var cfg Configuration
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("yaml Unmarshal", err.Error())
 	}
 
 	return &cfg, nil

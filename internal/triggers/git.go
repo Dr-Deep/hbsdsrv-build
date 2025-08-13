@@ -57,8 +57,7 @@ func NewTriggerGit(cfg config.TriggerConfig) internal.Trigger {
 
 func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 	var checkForNewCommits = func() {
-
-		//
+		// get references
 		refs, err := t.remote.List(&git.ListOptions{})
 		if err != nil {
 			b.Logger.Error("Git", err.Error())
@@ -69,7 +68,6 @@ func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 		// latest hash?
 		for _, r := range refs {
 			if r.Name() == gitplumbing.NewBranchReferenceName(t.GitBranch) {
-
 				// compare hashes from branch
 				if r.Hash().String() != t.lastCommitHash.String() {
 					// new commit

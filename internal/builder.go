@@ -33,7 +33,6 @@ type Builder struct {
 // NewBuilder creates and initializes a new Builder instance
 // with the provided logger and configuration.
 func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
-
 	var builder = &Builder{
 		trigger: []Trigger{},
 		jobs:    map[string][]Job{},
