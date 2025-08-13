@@ -42,8 +42,6 @@ var (
 
 func init() {
 	flag.Parse()
-
-	// Todo: gucken das nur root schreibrechte auf cfg hat sonst führen wir hier ganix aus
 }
 
 func setupConfig() {
@@ -55,6 +53,16 @@ func setupConfig() {
 	)
 	if err != nil {
 		panic(err)
+	}
+
+	info, err := cfgFile.Stat()
+	if err != nil {
+		panic(err)
+	}
+
+	// check if the config file is ro
+	if info.Mode().Perm()&0o022 != 0 {
+		panic("config file must not be writable")
 	}
 
 	cfg, err = config.LoadConfig(cfgFile)

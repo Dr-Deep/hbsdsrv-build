@@ -27,12 +27,12 @@ type Configuration struct {
 func LoadConfig(file *os.File) (*Configuration, error) {
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return nil, fmt.Errorf("io ReadAll", err.Error())
+		return nil, fmt.Errorf("io ReadAll: %s", err.Error())
 	}
 
 	var cfg Configuration
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, fmt.Errorf("yaml Unmarshal", err.Error())
+		return nil, fmt.Errorf("yaml Unmarshal: %s", err.Error())
 	}
 
 	return &cfg, nil

@@ -22,6 +22,7 @@ linters:
     - varnamelen
     - revive
     - ireturn
+    - wrapcheck
 
   # All available settings of specific linters.
   settings:
