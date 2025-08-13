@@ -99,7 +99,7 @@ func (t *TriggerGit) Run(b *internal.Builder, c chan internal.TriggerSignal) {
 	}
 
 	for {
-		time.Sleep(testIntervalDuration)
+		time.Sleep(gitIntervalDuration)
 		checkForNewCommits()
 	}
 }
