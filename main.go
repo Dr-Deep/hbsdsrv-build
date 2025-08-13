@@ -10,6 +10,8 @@ import (
 	"os"
 )
 
+const rwForOwnerOnlyPerm = 0o600
+
 var (
 	allTriggers = map[string]func(config.TriggerConfig) internal.Trigger{
 		"git":  triggers.NewTriggerGit,
@@ -49,7 +51,7 @@ func setupConfig() {
 	cfgFile, err := os.OpenFile(
 		*configFilePath,
 		os.O_RDONLY,
-		0600,
+		rwForOwnerOnlyPerm,
 	)
 	if err != nil {
 		panic(err)
@@ -68,7 +70,7 @@ func setupLogger() {
 		_logFile, err := os.OpenFile(
 			*loggingFilePath,
 			os.O_CREATE|os.O_WRONLY|os.O_APPEND,
-			0600,
+			rwForOwnerOnlyPerm,
 		)
 		if err != nil {
 			panic(err)
