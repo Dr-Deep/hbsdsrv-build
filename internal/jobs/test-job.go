@@ -28,4 +28,4 @@ func (j *JobTest) Run(b *internal.Builder) error {
 	return cmd.Run()
 }
 
-func (j JobTest) Abort() {}
+func (j JobTest) Abort(b *internal.Builder) {}

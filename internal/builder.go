@@ -21,6 +21,8 @@ type Builder struct {
 	Logger *logging.Logger
 	cfg    *config.Configuration
 
+	currentRunningJob Job
+
 	// Runtime Signals
 	triggersSignalChan chan TriggerSignal
 	exitSignalChan     chan os.Signal
@@ -96,6 +98,11 @@ func (b *Builder) Launch() {
 func (b *Builder) Stop() {
 	b.Logger.Info("Quitting...")
 
+	// abort job
+	if b.currentRunningJob != nil {
+		b.currentRunningJob.Abort(b)
+	}
+
 	// wait for jobs
 	b.Lock()
 
@@ -115,12 +122,16 @@ func (b *Builder) RunJob(job Job) {
 		fmt.Sprintf("%v", job),
 	)
 
+	b.currentRunningJob = job
+
 	if err := job.Run(b); err != nil {
 		b.Logger.Error(
 			fmt.Sprintf("%s", err),
 			fmt.Sprintf("%#v", job),
 		)
 	}
+
+	b.currentRunningJob = nil
 
 	b.Unlock()
 }

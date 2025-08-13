@@ -43,18 +43,18 @@ jobs:
 
   hsbdsrv-build:
     build-install:
-      - [ # git clone => /usr/local && go build .
-        "echo hbsdsrv-build test",
-        "&&",
-        "echo hbsdsrv-build test2",
+      - [ # "(TMPDIR=$(mktemp -d) && git clone 'https://github.com/Dr-Deep/hbsdsrv-www.git' \"$TMPDIR/hbsdsrv-www\" && cd \"$TMPDIR/hbsdsrv-www\" && go build . && mv hbsdsrv-www /usr/local/bin/hbsdsrv-www)",
+        "",
+        "",
+        "",
         ]
 
   hbsdsrv-www:
     build-install:
-      - [ # git clone => /usr/local && go build .
-        "echo hbsdsrv-www test",
+      - [ # git clone => /tmp && go build . // mv build /usr/local/exeX
+        "git clone 'https://github.com/Dr-Deep/hbsdsrv-www.git' /usr/local/hbsdsrv-www",
         "&&",
-        "echo hbsdsrv-www test2",
+        "",
         ]
 
 triggers:
