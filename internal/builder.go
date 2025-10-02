@@ -4,12 +4,13 @@ package internal
 
 import (
 	"fmt"
-	"hbsdsrv-build/internal/config"
-	"hbsdsrv-build/internal/logging"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
+
+	"github.com/Dr-Deep/hbsdsrv-build/internal/config"
+	"github.com/Dr-Deep/logging-go"
 )
 
 // Builder manages triggers and jobs, handles runtime signals,
@@ -49,36 +50,18 @@ func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
 // RegisterTrigger registers a new trigger with the Builder,
 // using the provided trigger creation function and configuration.
 func (b *Builder) RegisterTrigger(f func(config.TriggerConfig) Trigger, t config.TriggerConfig) {
-	b.Logger.Debug(
-		"registering",
-		fmt.Sprintf("%#v", t),
-	)
 	b.trigger = append(
 		b.trigger,
 		f(t),
 	)
-
 	b.Logger.Debug(
-		"registered",
-		fmt.Sprintf("%#v", t),
+		fmt.Sprintf("%v", t),
 	)
 }
 
 // RegisterJob registers a job under the given job name
 // and associates it with a specific target.
 func (b *Builder) RegisterJob(jobname string, targetname string, target Job) {
-	// []trigger
-	// trigger-job: pkgbase/ports
-
-	// JobPorts(targets)
-	// targets = b.cfg.Jobs["trigger-job"]
-
-	// trigger-job:
-	// map[string]Targets
-	// map[string][]Job
-
-	//builder: jobs    map[string][]Job
-
 	b.jobs[jobname] = append(
 		b.jobs[jobname],
 		target,
@@ -124,26 +107,54 @@ func (b *Builder) Stop() {
 
 // RunJob executes the provided job within the Builder context,
 // logging its execution and handling any errors.
-func (b *Builder) RunJob(job Job) {
+func (b *Builder) RunJob(t *TriggerSignal, job Job) {
 	b.Lock()
-
 	b.Logger.Info(
-		"Got triggered, running job",
-		fmt.Sprintf("%v", job),
+		"Running Job",
+		t.JobName, t.Reason,
 	)
+	//? ---
 
 	b.currentRunningJob = job
 
-	if err := job.Run(b); err != nil {
+	// run
+	var err = job.Run(b)
+	if err != nil {
 		b.Logger.Error(
-			fmt.Sprintf("%s", err),
-			fmt.Sprintf("%#v", job),
+			t.JobName,
+			err.Error(),
 		)
 	}
 
 	b.currentRunningJob = nil
 
+	//? ---
 	b.Unlock()
+	b.Logger.Info(
+		"Completed Job",
+		t.JobName, t.Reason,
+	)
+}
+
+func (b *Builder) AbortCurrentJob() {
+	if b.currentRunningJob == nil {
+		return
+	}
+
+	if err := b.currentRunningJob.Abort(b); err != nil {
+		//!log
+		return
+	}
+
+	//!log
+}
+
+// ? fifo queue?
+func (b *Builder) handleTrigger(t *TriggerSignal) {
+	jobs := b.jobs[t.JobName]
+	for _, j := range jobs {
+		go b.RunJob(t, j)
+	}
 }
 
 // queue, weil immer nur 1x job aufeinmal
@@ -163,18 +174,11 @@ func (b *Builder) run() {
 
 		case <-b.exitSignalChan:
 			b.Logger.Info("catched SIGINT/SIGTERM")
-
+			// b.Stop() in defer
 			return
 
 		default:
 			continue
 		}
-	}
-}
-
-func (b *Builder) handleTrigger(t *TriggerSignal) {
-	jobs := b.jobs[t.JobName]
-	for _, j := range jobs {
-		go b.RunJob(j)
 	}
 }

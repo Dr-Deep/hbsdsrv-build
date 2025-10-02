@@ -1,9 +1,10 @@
 package triggers
 
 import (
-	"hbsdsrv-build/internal"
-	"hbsdsrv-build/internal/config"
 	"time"
+
+	"github.com/Dr-Deep/hbsdsrv-build/internal"
+	"github.com/Dr-Deep/hbsdsrv-build/internal/config"
 
 	git "github.com/go-git/go-git/v6"
 	gitcfg "github.com/go-git/go-git/v6/config"

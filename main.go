@@ -1,26 +1,29 @@
+//go:build freebsd
+
 package main
 
 import (
 	"flag"
-	"hbsdsrv-build/internal"
-	"hbsdsrv-build/internal/config"
-	"hbsdsrv-build/internal/jobs"
-	"hbsdsrv-build/internal/logging"
-	"hbsdsrv-build/internal/triggers"
 	"os"
+
+	"github.com/Dr-Deep/hbsdsrv-build/internal"
+	"github.com/Dr-Deep/hbsdsrv-build/internal/config"
+	"github.com/Dr-Deep/hbsdsrv-build/internal/jobs"
+	"github.com/Dr-Deep/hbsdsrv-build/internal/triggers"
+
+	"github.com/Dr-Deep/logging-go"
 )
 
 const rwForOwnerOnlyPerm = 0o600
 
 var (
 	allTriggers = map[string]func(config.TriggerConfig) internal.Trigger{
-		"git":  triggers.NewTriggerGit,
-		"test": triggers.NewTriggerTest,
+		"git": triggers.NewTriggerGit,
 	}
 
 	allJobTargets = map[string]func(config.JobArgs) internal.Job{
-		"test":    jobs.NewJobTest,
-		"ports":   jobs.NewJobPorts,
+		"hbsdsrv": jobs.NewJobCmd,
+		"ports":   jobs.NewJobCmd,
 		"pkgbase": jobs.NewJobPkgbase,
 	}
 
@@ -73,6 +76,7 @@ func setupConfig() {
 
 func setupLogger() {
 	var logFile *os.File
+
 	// #nosec G304 -- Zugriff nur auf bekannte Log- und Config-Dateien
 	if *loggingFilePath != "" {
 		_logFile, err := os.OpenFile(
@@ -84,8 +88,6 @@ func setupLogger() {
 			panic(err)
 		}
 		logFile = _logFile
-	} else {
-		logFile = os.Stdout
 	}
 
 	logger = logging.NewLogger(logFile)

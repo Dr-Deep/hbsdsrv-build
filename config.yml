@@ -1,75 +1,103 @@
 jobs:
   pkgbase:
-    test:
+    vermeer: # hbsd-update -Bo ?
       - [
-        "echo pkgbase test",
+        "echo pkgbase vermeer test",
         "&&",
-        "echo pkgbase test2",
+        "echo pkgbase vermeer test2",
         ]
+
+    goldmont-plus:
+      - [
+          "echo pkgbase goldmont_plus test",
+          "&&",
+          "echo pkgbase goldmont_plus test2",
+          ]
 
   ports:
     goldmont-plus:
       - [
         "poudriere ports -u -p default -p hyprland_overlay -p signal_desktop_overlay",
         "&&",
-        "poudriere bulk -v -O hyprland_overlay -O signal_overlay -j HBSD-14-STABLE -p default -z goldmont_plus -f /usr/local/etc/poudriere.d/pkglist",
+        "poudriere bulk -v -O hyprland_overlay -O signal_desktop_overlay -j HBSD-14-STABLE -p default -z goldmont_plus -f /usr/local/etc/poudriere.d/pkglist",
         "&&",
         "gotify push -t goldmont-plus -p 10 'Build erfolgreich'",
         "||",
         "gotify push -t goldmont-plus -p 9 'Build fehlgeschlagen'",
         ]
 
-    skylake:
+    vermeer:
       - [
         "poudriere ports -u -p default -p hyprland_overlay -p signal_desktop_overlay",
         "&&",
-        "poudriere bulk -v -O hyprland_overlay -O signal_overlay -j HBSD-14-STABLE -p default -z skylake -f /usr/local/etc/poudriere.d/pkglist",
+        "poudriere bulk -v -O hyprland_overlay -O signal_desktop_overlay -j HBSD-14-STABLE -p default -z vermeer -c -f /usr/local/etc/poudriere.d/pkglist",
         "&&",
-        "gotify push -t skylake -p 10 'Build erfolgreich'",
+        "gotify push -t vermeer -p 10 'Build erfolgreich'",
         "||",
-        "gotify push -t skylake -p 9 'Build fehlgeschlagen'",
+        "gotify push -t vermeer -p 9 'Build fehlgeschlagen'",
         ]
 
-    lto-tests:
+  hbsdsrv: # build & install
+    hbsdsrv-build:
       - [
-        "poudriere ports -u -p default -p hyprland_overlay -p signal_desktop_overlay",
+        "SRCDIR=/usr/local/hbsdsrv-build",
         "&&",
-        "poudriere bulk -v -O hyprland_overlay -O signal_overlay -j HBSD-14-STABLE -p default -z lto_test -f /usr/local/etc/poudriere.d/pkglist",
+        "PWD=$(pwd)",
         "&&",
-        "gotify push -t lto_test -p 10 'Build erfolgreich'",
-        "||",
-        "gotify push -t lto_test -p 9 'Build fehlgeschlagen'",
-        ]
-
-  hsbdsrv-build:
-    build-install:
-      - [
         "TMPDIR=$(mktemp -d)",
         "&&",
-        "git clone 'https://github.com/Dr-Deep/hbsdsrv-build.git' $TMPDIR/hbsdsrv-build",
+        # Git
+        "git clone 'https://github.com/Dr-Deep/hbsdsrv-build.git' ${TMPDIR}/hbsdsrv-build",
         "&&",
-        "go build -C $TMPDIR/hbsdsrv-build -v -x",
+        # /usr/local/hbsdsrv-builder
+        "rm -rfv ${SRCDIR}",
         "&&",
-        "mv $TMPDIR/hbsdsrv-build/hbsdsrv-build /usr/local/hbsdsrv-build",
-        ]
+        "cp -Rv ${TMPDIR}/hbsdsrv-build ${SRCDIR}",
+        "&&",
+        # Build & Install
+        "cd ${SRCDIR}",
+        "&&",
+        "make all",
+        "&&",
+        "cd ${PWD}",
+        "&&",
+        # Restart Service?
+        "echo updated our hbsdsrv-builder!", # "/usr/sbin/service hbsdsrv_builder restart",
+      ]
 
-  hbsdsrv-www:
-    build-install:
+    hbsdsrv-www:
       - [
+        "SRCDIR=/usr/local/hbsdsrv-www",
+        "&&",
+        "PWD=$(pwd)",
+        "&&",
         "TMPDIR=$(mktemp -d)",
         "&&",
-        "git clone 'https://github.com/Dr-Deep/hbsdsrv-www.git' $TMPDIR/hbsdsrv-www",
+        # Git
+        "git clone 'https://github.com/Dr-Deep/hbsdsrv-www.git' ${TMPDIR}/hbsdsrv-www",
         "&&",
-        "go build -C $TMPDIR/hbsdsrv-www -v -x",
+        # /usr/local/hbsdsrv-www
+        "rm -rfv ${SRCDIR}",
         "&&",
-        "mv $TMPDIR/hbsdsrv-www/hbsdsrv-www /usr/local/hbsdsrv-www",
-        ]
+        "cp -Rv ${TMPDIR}/hbsdsrv-www ${SRCDIR}",
+        "&&",
+        # Build & Install
+        "cd ${SRCDIR}",
+        "&&",
+        "make all",
+        "&&",
+        "cd ${PWD}",
+        "&&",
+        # Start Service
+        "/usr/sbin/service hbsdsrv_www restart",
+      ]
+
 
 triggers:
   - type: git
     job: pkgbase
     git-repo-url: https://git.hardenedbsd.org/hardenedbsd/HardenedBSD
-    git-branch: hardened/14-stable/master	
+    git-branch: hardened/14-stable/master	# new branch?
 
   - type: git
     job: ports
@@ -77,11 +105,11 @@ triggers:
     git-branch: hardenedbsd/main
 
   - type: git
-    job: hsbdsrv-build
-    git-repo-url: https://github.com/Dr-Deep/hbsdsrv-build/
+    job: hbsdsrv-build
+    git-repo-url: https://github.com/Dr-Deep/hbsdsrv-build
     git-branch: main
 
   - type: git
-    job: hsbdsrv-www
+    job: hbsdsrv-www
     git-repo-url: https://github.com/Dr-Deep/hbsdsrv-www
     git-branch: main

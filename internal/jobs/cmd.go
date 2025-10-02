@@ -9,16 +9,17 @@ import (
 	"github.com/Dr-Deep/hbsdsrv-build/internal/config"
 )
 
-type JobPkgbase struct {
+type JobCmd struct {
 	args        config.JobArgs
 	stopJobProc context.CancelFunc
 }
 
-func NewJobPkgbase(args config.JobArgs) internal.Job {
-	return &JobPkgbase{args: args}
+func NewJobCmd(args config.JobArgs) internal.Job {
+	return &JobCmd{args: args}
 }
 
-func (j *JobPkgbase) Run(b *internal.Builder) error {
+// run until command is done
+func (j *JobCmd) Run(b *internal.Builder) error {
 	cmd, cancel, err := b.RunOSCommand(j.args)
 	if err != nil {
 		return err
@@ -29,7 +30,7 @@ func (j *JobPkgbase) Run(b *internal.Builder) error {
 	return cmd.Wait()
 }
 
-func (j *JobPkgbase) Abort(b *internal.Builder) error {
+func (j *JobCmd) Abort(b *internal.Builder) error {
 	if j.stopJobProc == nil {
 		return nil
 	}
