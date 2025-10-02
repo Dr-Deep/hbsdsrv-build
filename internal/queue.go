@@ -1,22 +1,36 @@
 package internal
 
+//! not tested
+
+type BuilderQueue struct {
+	elems []Job
+	seen  map[Job]struct{}
+}
+
+func NewBuilderQueue() *BuilderQueue {
+	return &BuilderQueue{seen: make(map[Job]struct{})}
+}
+
+// to poll?
+func (q *BuilderQueue) Len() int {
+	return len(q.elems)
+}
+
+func (q *BuilderQueue) Enqueue(j Job) {
+	if _, exists := q.seen[j]; !exists {
+		// enqueue
+		q.elems = append(q.elems, j)
+		q.seen[j] = struct{}{}
+	}
+}
+
+func (q *BuilderQueue) Dequeue() Job {
+
+	// return front Job & Dequeue item
+	return nil
+}
+
 /*
-type UniqueQueue[T comparable] struct {
-    items []T
-    seen  map[T]struct{}
-}
-
-func NewUniqueQueue[T comparable]() *UniqueQueue[T] {
-    return &UniqueQueue[T]{seen: make(map[T]struct{})}
-}
-
-func (q *UniqueQueue[T]) Enqueue(item T) {
-    if _, exists := q.seen[item]; !exists {
-        q.items = append(q.items, item)
-        q.seen[item] = struct{}{}
-    }
-}
-
 func (q *UniqueQueue[T]) Dequeue() (T, bool) {
     if len(q.items) == 0 {
         var zero T
@@ -26,10 +40,6 @@ func (q *UniqueQueue[T]) Dequeue() (T, bool) {
     q.items = q.items[1:]
     delete(q.seen, item)
     return item, true
-}
-
-func (q *UniqueQueue[T]) Len() int {
-    return len(q.items)
 }
 
 func main() {
@@ -45,5 +55,4 @@ func main() {
         fmt.Println(v)
     }
 }
-
 */

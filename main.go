@@ -48,10 +48,6 @@ var (
 	)
 )
 
-func init() {
-	flag.Parse()
-}
-
 func setupConfig() {
 	// #nosec G304 -- Zugriff nur auf bekannte Log- und Config-Dateien
 	cfgFile, err := os.OpenFile(
@@ -116,6 +112,7 @@ func setupLogger() {
 }
 
 func main() {
+	flag.Parse()
 	setupConfig()
 	setupLogger()
 

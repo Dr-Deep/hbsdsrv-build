@@ -88,7 +88,7 @@ func (b *Builder) run() {
 		go t.Run(b, b.triggersSignalChan)
 	}
 
-	b.Logger.Info("triggers launched")
+	b.Logger.Info("launching...")
 	for {
 		select {
 		case t := <-b.triggersSignalChan:

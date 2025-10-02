@@ -67,6 +67,7 @@ func (b *Builder) RunOSCommand(argv []string) (*exec.Cmd, context.CancelFunc, er
 	}
 
 	// Niceness
+	// https://man.freebsd.org/cgi/man.cgi?query=setpriority&manpath=OpenBSD+3.2
 	if err := syscall.Setpriority(
 		syscall.PRIO_PGRP, // job and all his childs
 		cmd.Process.Pid,   // PID, group parent

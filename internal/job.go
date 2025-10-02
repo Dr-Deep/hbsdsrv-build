@@ -33,22 +33,23 @@ func (b *Builder) RunJob(t *TriggerSignal, job Job) {
 	b.currentRunningJob = job
 
 	// run
-	var err = job.Run(b)
-	if err != nil {
-		b.Logger.Error(
-			t.JobName,
-			err.Error(),
-		)
-	}
-
+	err := job.Run(b)
 	b.currentRunningJob = nil
 
 	//? ---
 	b.Unlock()
-	b.Logger.Info(
-		"Completed Job",
-		t.JobName, t.Reason,
-	)
+	if err != nil {
+		b.Logger.Error(
+			"Completed Job with Error",
+			t.JobName, t.Reason,
+			err.Error(),
+		)
+	} else {
+		b.Logger.Info(
+			"Completed Job",
+			t.JobName, t.Reason,
+		)
+	}
 }
 
 func (b *Builder) AbortCurrentJob() {
