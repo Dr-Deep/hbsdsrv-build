@@ -3,7 +3,6 @@
 package internal
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -47,31 +46,6 @@ func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
 	return builder
 }
 
-// RegisterTrigger registers a new trigger with the Builder,
-// using the provided trigger creation function and configuration.
-func (b *Builder) RegisterTrigger(f func(config.TriggerConfig) Trigger, t config.TriggerConfig) {
-	b.trigger = append(
-		b.trigger,
-		f(t),
-	)
-	b.Logger.Debug(
-		fmt.Sprintf("%v", t),
-	)
-}
-
-// RegisterJob registers a job under the given job name
-// and associates it with a specific target.
-func (b *Builder) RegisterJob(jobname string, targetname string, target Job) {
-	b.jobs[jobname] = append(
-		b.jobs[jobname],
-		target,
-	)
-
-	b.Logger.Debug(
-		fmt.Sprintf("%s, %s, %#v", jobname, targetname, target),
-	)
-}
-
 // Launch starts the Builder by listening for system signals
 // and executing triggers in separate goroutines.
 func (b *Builder) Launch() {
@@ -103,58 +77,6 @@ func (b *Builder) Stop() {
 	close(b.triggersSignalChan)
 
 	os.Exit(0)
-}
-
-// RunJob executes the provided job within the Builder context,
-// logging its execution and handling any errors.
-func (b *Builder) RunJob(t *TriggerSignal, job Job) {
-	b.Lock()
-	b.Logger.Info(
-		"Running Job",
-		t.JobName, t.Reason,
-	)
-	//? ---
-
-	b.currentRunningJob = job
-
-	// run
-	var err = job.Run(b)
-	if err != nil {
-		b.Logger.Error(
-			t.JobName,
-			err.Error(),
-		)
-	}
-
-	b.currentRunningJob = nil
-
-	//? ---
-	b.Unlock()
-	b.Logger.Info(
-		"Completed Job",
-		t.JobName, t.Reason,
-	)
-}
-
-func (b *Builder) AbortCurrentJob() {
-	if b.currentRunningJob == nil {
-		return
-	}
-
-	if err := b.currentRunningJob.Abort(b); err != nil {
-		//!log
-		return
-	}
-
-	//!log
-}
-
-// ? fifo queue?
-func (b *Builder) handleTrigger(t *TriggerSignal) {
-	jobs := b.jobs[t.JobName]
-	for _, j := range jobs {
-		go b.RunJob(t, j)
-	}
 }
 
 // queue, weil immer nur 1x job aufeinmal

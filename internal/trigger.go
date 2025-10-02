@@ -1,5 +1,11 @@
 package internal
 
+import (
+	"fmt"
+
+	"github.com/Dr-Deep/hbsdsrv-build/internal/config"
+)
+
 type Trigger interface {
 	Run(b *Builder, c chan TriggerSignal)
 }
@@ -9,14 +15,22 @@ type TriggerSignal struct {
 	Reason  string
 }
 
-/*
-triggers:
+// RegisterTrigger registers a new trigger with the Builder,
+// using the provided trigger creation function and configuration.
+func (b *Builder) RegisterTrigger(f func(config.TriggerConfig) Trigger, t config.TriggerConfig) {
+	b.trigger = append(
+		b.trigger,
+		f(t),
+	)
+	b.Logger.Debug(
+		fmt.Sprintf("%v", t),
+	)
+}
 
-  - git-repo-url: https://git.hardenedbsd.org/hardenedbsd/HardenedBSD
-    git-branch: hardened/14-stable/master
-    job: pkgbase
-
-  - git-repo-url: https://git.hardenedbsd.org/hardenedbsd/ports.git
-    git-branch: hardenedbsd/main
-    job: ports
-*/
+// ? fifo queue?
+func (b *Builder) handleTrigger(t *TriggerSignal) {
+	jobs := b.jobs[t.JobName]
+	for _, j := range jobs {
+		go b.RunJob(t, j)
+	}
+}
