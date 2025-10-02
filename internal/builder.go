@@ -1,8 +1,11 @@
+//go:build freebsd
+
 // Package internal provides core functionality for building and managing
 // triggers and jobs, including runtime signal handling and configuration management.
 package internal
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -25,6 +28,7 @@ type Builder struct {
 
 	// Runtime Signals
 	triggersSignalChan chan TriggerSignal
+	infoSignalChan     chan os.Signal
 	exitSignalChan     chan os.Signal
 
 	sync.Mutex
@@ -40,6 +44,7 @@ func NewBuilder(logger *logging.Logger, cfg *config.Configuration) *Builder {
 		cfg:     cfg,
 	}
 
+	builder.infoSignalChan = make(chan os.Signal, 1)
 	builder.exitSignalChan = make(chan os.Signal, 1)
 	builder.triggersSignalChan = make(chan TriggerSignal, 1)
 
@@ -53,6 +58,11 @@ func (b *Builder) Launch() {
 		b.exitSignalChan,
 		syscall.SIGINT,
 		syscall.SIGTERM,
+	)
+
+	signal.Notify(
+		b.infoSignalChan,
+		syscall.SIGINFO,
 	)
 
 	b.run()
@@ -73,10 +83,23 @@ func (b *Builder) Stop() {
 
 	// Stop Jobs
 	signal.Stop(b.exitSignalChan)
+	signal.Stop(b.infoSignalChan)
+	close(b.infoSignalChan)
 	close(b.exitSignalChan)
 	close(b.triggersSignalChan)
 
 	os.Exit(0)
+}
+
+func (b *Builder) printInfo() {
+	// print current job status oder so
+	// queue?
+
+	if b.currentRunningJob != nil {
+		b.Logger.Info("INFO", fmt.Sprintf("%#v", b.currentRunningJob))
+	} else {
+		b.Logger.Info("INFO", "no job active")
+	}
 }
 
 // queue, weil immer nur 1x job aufeinmal
@@ -93,6 +116,9 @@ func (b *Builder) run() {
 		select {
 		case t := <-b.triggersSignalChan:
 			b.handleTrigger(&t)
+
+		case <-b.infoSignalChan:
+			b.printInfo()
 
 		case <-b.exitSignalChan:
 			b.Logger.Info("catched SIGINT/SIGTERM")
