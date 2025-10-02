@@ -31,15 +31,20 @@ var (
 	logger *logging.Logger
 
 	// Flags
-	configFilePath = flag.String(
-		"config-file",
-		"./config.yml",
-		"configuration file",
-	)
 	loggingFilePath = flag.String(
-		"logging-file",
+		"log",
 		"",
 		"logging file",
+	)
+	logLevel = flag.String(
+		"loglvl",
+		"info",
+		"log level ('debug', 'info', 'error', 'fatal', 'none')",
+	)
+	configFilePath = flag.String(
+		"cfg",
+		"./config.yml",
+		"configuration file",
 	)
 )
 
@@ -91,6 +96,23 @@ func setupLogger() {
 	}
 
 	logger = logging.NewLogger(logFile)
+
+	switch *logLevel {
+	case "debug":
+		logger.Level = logging.LogDebug
+
+	case "info":
+		logger.Level = logging.LogInfo
+
+	case "error":
+		logger.Level = logging.LogError
+
+	case "fatal":
+		logger.Level = logging.LogFatal
+
+	case "none":
+		logger.Level = logging.Level(0)
+	}
 }
 
 func main() {
