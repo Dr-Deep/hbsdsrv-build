@@ -19,7 +19,7 @@ build: clean
 
 install: build
 	@echo "Installing symlink of $(BINARY_NAME) to /usr/local/bin"
-	@ln -vs $(pwd)/$(BUILD_DIR)/$(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
+	@ln -vfs $(pwd)/$(BUILD_DIR)/$(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
 
 service: install
 	@echo "Installing new Service File"
