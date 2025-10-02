@@ -4,6 +4,8 @@ github.com/Dr-Deep/logging-go v0.0.0-20250811201922-6b18f18035fb h1:BPsrTfquLEf3
 github.com/Dr-Deep/logging-go v0.0.0-20250811201922-6b18f18035fb/go.mod h1:IrE0MUd7Je7zubSkAiI3VvF6INjbyCVz30RwIHtZk8U=
 github.com/Dr-Deep/logging-go v0.0.0-20251002014506-a0219897a44d h1:G6L2OiZ60cMxTA6ok0MchCJ6o2nIR+UKem3sHpzz+CA=
 github.com/Dr-Deep/logging-go v0.0.0-20251002014506-a0219897a44d/go.mod h1:IrE0MUd7Je7zubSkAiI3VvF6INjbyCVz30RwIHtZk8U=
+github.com/Dr-Deep/logging-go v0.0.0-20251002044224-80833ccb7b99 h1:ishDQoROrIyRrB59jA6p0+jML5w7AMBsdv74eKFNy3I=
+github.com/Dr-Deep/logging-go v0.0.0-20251002044224-80833ccb7b99/go.mod h1:IrE0MUd7Je7zubSkAiI3VvF6INjbyCVz30RwIHtZk8U=
 github.com/Microsoft/go-winio v0.6.2 h1:F2VQgta7ecxGYO8k3ZZz3RS8fVIXVxONVUPlNERoyfY=
 github.com/Microsoft/go-winio v0.6.2/go.mod h1:yd8OoFMLzJbo9gZq8j5qaps8bJ9aShtEA8Ipt1oGCvU=
 github.com/ProtonMail/go-crypto v1.3.0 h1:ILq8+Sf5If5DCpHQp4PbZdS1J7HDFRXz/+xKBiRGFrw=

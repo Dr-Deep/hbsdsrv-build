@@ -3,7 +3,7 @@ module github.com/Dr-Deep/hbsdsrv-build
 go 1.24.6
 
 require (
-	github.com/Dr-Deep/logging-go v0.0.0-20251002014506-a0219897a44d
+	github.com/Dr-Deep/logging-go v0.0.0-20251002044224-80833ccb7b99
 	github.com/go-git/go-git/v6 v6.0.0-20250728093604-6aaf1933ecab
 	gopkg.in/yaml.v3 v3.0.1
 )
