@@ -1,44 +1,41 @@
 #!/bin/sh
-
+#
 # PROVIDE: hbsdsrv_builder
-# REQUIRE: DAEMON
+# REQUIRE: DAEMON NETWORKING
 # KEYWORD: shutdown
+
+#
+# Add these lines to /etc/rc.conf.local or /etc/rc.conf
+# to enable this service:
+#
+# hbsdsrv_builder_enable (bool):    Set to NO by default.
+#
+# hbsdsrv_builder_flags: (string):  Custom Argv
+#
+# hbsdsrv_builder_config (string):  Config File
+#
+# hbsdsrv_builder_logfile (string): Log File
 
 . /etc/rc.subr
 
-# /usr/local/etc/rc.d/hbsdsrv_builder
-
-name="hbsdsrv_builder"
+name=hbsdsrv_builder
 rcvar=hbsdsrv_builder_enable
+
+command="/usr/local/bin/hbsdsrv-build"
 
 load_rc_config $name
 
-: ${hbsdsrv_builder_enable:="no"}
-: ${hbsdsrv_builder_args:=""}
+# /etc/rc.conf Vars
+hbsdsrv_builder_enable=${hbsdsrv_builder_enable-"NO"}
+hbsdsrv_builder_flags=${hbsdsrv_builder_flags:-""}
+hbsdsrv_builder_config=${hbsdsrv_builder_config:-"/usr/local/hbsdsrv-build/config.yml"}
+hbsdsrv_builder_logfile=${hbsdsrv_builder_logfile:-"/var/log/${name}.log"}
 
-start_cmd="${name}_start"
-stop_cmd="${name}_stop"
+pidfile=${hbsdsrv_builder_pidfile-"/var/run/${name}.pid"}
+logfile=${hbsdsrv_builder_logfile-"/var/log/${name}.log"}
 
-hbsdsrv_builder_pidfile="/var/run/${name}.pid"
-hbsdsrv_builder_logfile="/var/log/${name}.log"
+required_files=${hbsdsrv_builder_config}
 
-proc="/usr/local/hbsdsrv-builder/hbsdsrv-build"
-procargs="${hbsdsrv_builder_args}"
 
-hbsdsrv_builder_start() {
-    echo "Launching hbsdsrv-builder..."
-    touch ${hbsdsrv_builder_logfile}
-    /usr/sbin/daemon -f -p ${hbsdsrv_builder_pidfile} -o ${hbsdsrv_builder_logfile} -t ${name} ${proc} ${procargs} || {
-        echo "Failed to start ${name}"
-        return 1
-    }
-}
-
-hbsdsrv_builder_stop() {
-    echo "Stopping hbsdsrv-builder..."
-    if [ -f "${hbsdsrv_builder_pidfile}"]; then
-        kill -INT "$(cat "${hbsdsrv_builder_pidfile}")" || true
-    fi
-}
-
+command_args="--config-file ${hbsdsrv_builder_config} --logging-file ${hbsdsrv_builder_logfile} ${hbsdsrv_builder_flags}"
 run_rc_command "$1"
