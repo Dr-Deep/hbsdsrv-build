@@ -18,8 +18,8 @@ build: clean
 	$(GOCMD) build -o $(BUILD_DIR)/$(BINARY_NAME) $(SRC)
 
 install: build
-	@echo "Installing symlink of $(BINARY_NAME) to /usr/local/bin"
-	@ln -vfs $(shell pwd)/$(BUILD_DIR)/$(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
+	@echo "Installing to /usr/local/bin/$(BINARY_NAME)"
+	/usr/bin/install $(BUILD_DIR)/$(BINARY_NAME) /usr/local/bin/$(BINARY_NAME)
 
 service: install
 	@echo "Installing new Service File"
