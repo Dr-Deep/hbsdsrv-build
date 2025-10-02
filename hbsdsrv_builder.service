@@ -37,5 +37,5 @@ logfile=${hbsdsrv_builder_logfile-"/var/log/${name}.log"}
 required_files=${hbsdsrv_builder_config}
 
 
-command_args="--config-file ${hbsdsrv_builder_config} --logging-file ${hbsdsrv_builder_logfile} ${hbsdsrv_builder_flags}"
+command_args="--cfg ${hbsdsrv_builder_config} --log ${hbsdsrv_builder_logfile} ${hbsdsrv_builder_flags}"
 run_rc_command "$1"
