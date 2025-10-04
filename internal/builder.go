@@ -74,7 +74,7 @@ func (b *Builder) Stop() {
 	b.Logger.Info("Quitting...")
 
 	// wait for jobs
-	b.Lock()
+	go b.Lock()
 
 	// abort job
 	if b.currentRunningJob != nil {
