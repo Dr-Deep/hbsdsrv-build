@@ -73,13 +73,13 @@ func (b *Builder) Launch() {
 func (b *Builder) Stop() {
 	b.Logger.Info("Quitting...")
 
+	// wait for jobs
+	b.Lock()
+
 	// abort job
 	if b.currentRunningJob != nil {
 		b.currentRunningJob.Abort(b)
 	}
-
-	// wait for jobs
-	b.Lock()
 
 	// Stop Jobs
 	signal.Stop(b.exitSignalChan)
