@@ -78,7 +78,9 @@ func (b *Builder) Stop() {
 
 	// abort job
 	if b.currentRunningJob != nil {
-		b.currentRunningJob.Abort(b)
+		if err := b.currentRunningJob.Abort(b); err != nil {
+			b.Logger.Error(err.Error())
+		}
 	}
 
 	// Stop Jobs
