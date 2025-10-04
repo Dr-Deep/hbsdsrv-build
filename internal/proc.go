@@ -4,6 +4,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -18,7 +19,42 @@ const (
 
 	// Niceness
 	JobNiceness = 15
+
+	// Proccess Shutdown Deadline
+	JobDeadline = time.Second * 30
 )
+
+func (b *Builder) ShutdownProc(cmd *exec.Cmd, kill context.CancelFunc) error {
+	var pid = cmd.Process.Pid
+
+	if err := cmd.Process.Signal(syscall.SIGINT); err != nil {
+		return err
+	}
+
+	b.Logger.Info("waiting for proccess shutdown", fmt.Sprintf("PID:%v", pid))
+
+	// ticker
+	var (
+		deadline = time.After(JobDeadline)
+		ticker   = time.NewTicker(500 * time.Millisecond)
+	)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-deadline:
+			kill()
+			b.Logger.Error("killed because of deadline", fmt.Sprintf("PID:%v", pid))
+			return nil
+
+		case <-ticker.C:
+			if cmd.Process != nil && cmd.ProcessState.Exited() {
+				// process exited cleanly
+				return nil
+			}
+		}
+	}
+}
 
 // non-blocking; output goes to our stdin,stdout,stderr
 func (b *Builder) RunOSCommand(argv []string) (*exec.Cmd, context.CancelFunc, error) {
@@ -39,20 +75,12 @@ func (b *Builder) RunOSCommand(argv []string) (*exec.Cmd, context.CancelFunc, er
 		cmdargv...,
 	)
 
-	// chance to cleanup
-	cmd.Cancel = func() error {
-		return cmd.Process.Signal(syscall.SIGINT)
-	}
-
 	// reroute output
 	if b.Logger.File == os.Stdout {
 		cmd.Stdin = os.Stdin
 	}
 	cmd.Stdout = b.Logger.File
 	cmd.Stderr = b.Logger.File
-
-	// kill delay
-	cmd.WaitDelay = 30 * time.Second
 
 	// Process Attributes
 	cmd.SysProcAttr = &syscall.SysProcAttr{

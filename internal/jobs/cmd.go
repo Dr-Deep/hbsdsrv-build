@@ -4,14 +4,17 @@ package jobs
 
 import (
 	"context"
+	"os/exec"
 
 	"github.com/Dr-Deep/hbsdsrv-build/internal"
 	"github.com/Dr-Deep/hbsdsrv-build/internal/config"
 )
 
 type JobCmd struct {
-	args        config.JobArgs
-	stopJobProc context.CancelFunc
+	args config.JobArgs
+
+	jobProc     *exec.Cmd
+	killJobProc context.CancelFunc
 }
 
 func NewJobCmd(args config.JobArgs) internal.Job {
@@ -20,22 +23,21 @@ func NewJobCmd(args config.JobArgs) internal.Job {
 
 // run until command is done
 func (j *JobCmd) Run(b *internal.Builder) error {
-	cmd, cancel, err := b.RunOSCommand(j.args)
+	cmd, kill, err := b.RunOSCommand(j.args)
 	if err != nil {
 		return err
 	}
 
-	j.stopJobProc = cancel
+	j.jobProc = cmd
+	j.killJobProc = kill
 
 	return cmd.Wait()
 }
 
 func (j *JobCmd) Abort(b *internal.Builder) error {
-	if j.stopJobProc == nil {
+	if j.jobProc == nil {
 		return nil
 	}
 
-	j.stopJobProc()
-
-	return nil
+	return b.ShutdownProc(j.jobProc, j.killJobProc)
 }
